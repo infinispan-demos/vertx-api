@@ -1,4 +1,5 @@
 .idea
+/vertx-api.iml
 /*/*.iml
 /*/.vertx/
 target/
