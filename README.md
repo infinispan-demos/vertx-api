@@ -17,7 +17,9 @@ Example include :
 You can now put and get names using curl.
 
 `curl -X POST -H "Content-Type: application/json" -d '{"id":"42", "name":"Oihana"}' "http://localhost:8081/api/cutenames"`
+
 `curl -X GET -H "Content-Type: application/json" "http://localhost:8081/api/cutenames/42"`
+
 `curl -X POST -H "Content-Type: application/json" -d '{"name":"Elaia"}' "http://localhost:8081/api/cutenames"`
 
 ### Push API
