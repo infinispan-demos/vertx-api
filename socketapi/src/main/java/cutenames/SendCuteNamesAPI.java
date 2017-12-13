@@ -3,6 +3,7 @@ package cutenames;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.annotation.ClientCacheEntryCreated;
 import org.infinispan.client.hotrod.annotation.ClientListener;
 import org.infinispan.client.hotrod.event.ClientCacheEntryCreatedEvent;
@@ -48,9 +49,9 @@ public class SendCuteNamesAPI extends CacheAccessVerticle {
    }
 
    @Override
-   protected void addConfigToCache() {
+   protected void addConfigToCache(RemoteCache<String, String> cache) {
       logger.info("Added cute names listener");
-      defaultCache.addClientListener(new CuteNamesListener());
+      cache.addClientListener(new CuteNamesListener());
    }
 
    @Override
