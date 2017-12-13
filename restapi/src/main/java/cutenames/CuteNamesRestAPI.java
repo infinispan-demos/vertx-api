@@ -1,10 +1,12 @@
 package cutenames;
 
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.core.http.HttpServerResponse;
@@ -20,7 +22,7 @@ public class CuteNamesRestAPI extends CacheAccessVerticle {
    private final Logger logger = Logger.getLogger(CuteNamesRestAPI.class.getName());
 
    @Override
-   protected void initSuccess() {
+   protected void initSuccess(Future<Void> startFuture) {
       String host = config().getString("http.host", "localhost");
       int port = config().getInteger("http.port", 8080);
       logger.info(String.format("Starting CuteNamesRestAPI in %s:%d", host, port));
@@ -42,7 +44,13 @@ public class CuteNamesRestAPI extends CacheAccessVerticle {
 
       vertx.createHttpServer()
             .requestHandler(router::accept)
-            .listen(port);
+            .listen(port, ar -> {
+               if (ar.succeeded()) {
+                  startFuture.complete();
+               } else {
+                  startFuture.fail(ar.cause());
+               }
+            });
    }
 
    private void handleAddCuteName(RoutingContext rc) {
@@ -52,9 +60,14 @@ public class CuteNamesRestAPI extends CacheAccessVerticle {
       if (bodyAsJson != null && bodyAsJson.containsKey("name")) {
          String id = bodyAsJson.containsKey("id") ? bodyAsJson.getString("id") : UUID.randomUUID().toString();
          defaultCache.putAsync(id, bodyAsJson.getString("name"))
-               .thenAccept(s -> {
-                  logger.info(String.format("Cute name added [%s]", id));
-                  response.setStatusCode(HttpResponseStatus.CREATED.code()).end("Cute name added");
+               .whenComplete((s, t) -> {
+                  if (t == null) {
+                     logger.info(String.format("Cute name added [%s]", id));
+                     response.setStatusCode(HttpResponseStatus.CREATED.code()).end("Cute name added");
+                  } else {
+                     logger.log(Level.SEVERE, String.format("Failed to add cute name [%s]", id), t);
+                     rc.fail(500);
+                  }
                });
       } else {
          response.setStatusCode(HttpResponseStatus.BAD_REQUEST.code())
@@ -66,15 +79,20 @@ public class CuteNamesRestAPI extends CacheAccessVerticle {
       String id = rc.request().getParam("id");
       logger.info("Get by id called id=" + id);
       defaultCache.getAsync(rc.request().getParam("id"))
-            .thenAccept(value -> {
-               String cuteName;
-               if (value == null) {
-                  cuteName = String.format("Cute name %s not found", id);
-                  rc.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code());
+            .whenComplete((value, t) -> {
+               if (t == null) {
+                  String cuteName;
+                  if (value == null) {
+                     cuteName = String.format("Cute name %s not found", id);
+                     rc.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code());
+                  } else {
+                     cuteName = new JsonObject().put("name", value).encode();
+                  }
+                  rc.response().end(cuteName);
                } else {
-                  cuteName = new JsonObject().put("name", value).encode();
+                  logger.log(Level.SEVERE, String.format("Failed to find cute name [%s]", id), t);
+                  rc.fail(500);
                }
-               rc.response().end(cuteName);
             });
    }
 

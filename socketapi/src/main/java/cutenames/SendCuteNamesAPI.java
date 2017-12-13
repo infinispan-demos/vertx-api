@@ -3,14 +3,17 @@ package cutenames;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.annotation.ClientCacheEntryCreated;
 import org.infinispan.client.hotrod.annotation.ClientListener;
 import org.infinispan.client.hotrod.event.ClientCacheEntryCreatedEvent;
 
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
+import io.vertx.reactivex.CompletableHelper;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.ext.web.Router;
 import io.vertx.reactivex.ext.web.handler.sockjs.SockJSHandler;
@@ -21,7 +24,7 @@ public class SendCuteNamesAPI extends CacheAccessVerticle {
    private final Logger logger = Logger.getLogger(SendCuteNamesAPI.class.getName());
 
    @Override
-   protected void initSuccess() {
+   protected void initSuccess(Future<Void> startFuture) {
       logger.info("Starting SendCuteNamesAPI");
       Router router = Router.router(vertx);
 
@@ -41,13 +44,14 @@ public class SendCuteNamesAPI extends CacheAccessVerticle {
             .rxListen(config().getInteger("http.port", 8080))
             .doOnSuccess(server -> logger.info("HTTP server started"))
             .doOnError(t -> logger.log(Level.SEVERE, "HTTP server failed to start", t))
-            .subscribe();
+            .toCompletable()
+            .subscribe(CompletableHelper.toObserver(startFuture));
    }
 
    @Override
-   protected void addConfigToCache() {
+   protected void addConfigToCache(RemoteCache<String, String> cache) {
       logger.info("Added cute names listener");
-      defaultCache.addClientListener(new CuteNamesListener());
+      cache.addClientListener(new CuteNamesListener());
    }
 
    @Override
