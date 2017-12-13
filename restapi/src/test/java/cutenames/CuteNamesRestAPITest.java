@@ -45,7 +45,7 @@ public class CuteNamesRestAPITest {
                   .put("http.port", port)
                   .put("infinispan.host", host)
             );
-      webClient = WebClient.wrap(vertx.createHttpClient());
+      webClient = WebClient.create(vertx);
       vertx.deployVerticle(CuteNamesRestAPI.class.getName(), options, context.asyncAssertSuccess());
 
       // Create a name by default
