@@ -17,7 +17,7 @@ public abstract class CacheAccessVerticle extends AbstractVerticle {
    protected RemoteCache<String, String> defaultCache;
 
    @Override
-   public void start() throws Exception {
+   public void start(Future<Void> startFuture) throws Exception {
       vertx.executeBlocking(fut -> {
          Configuration configuration = new ConfigurationBuilder().addServer()
                .host(config().getString("infinispan.host", "datagrid-hotrod"))
@@ -32,9 +32,10 @@ public abstract class CacheAccessVerticle extends AbstractVerticle {
       }, res -> {
          if (res.succeeded()) {
             getLogger().log(Level.INFO, "Cache connection successfully done");
-            initSuccess();
+            initSuccess(startFuture);
          } else {
             getLogger().log(Level.SEVERE, "Cache connection error", res.cause());
+            startFuture.fail(res.cause());
          }
       });
    }
@@ -51,7 +52,7 @@ public abstract class CacheAccessVerticle extends AbstractVerticle {
 
    }
 
-   protected abstract void initSuccess();
+   protected abstract void initSuccess(Future<Void> startFuture);
 
    protected abstract Logger getLogger();
 }

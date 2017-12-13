@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.core.http.HttpServerResponse;
@@ -20,7 +21,7 @@ public class CuteNamesRestAPI extends CacheAccessVerticle {
    private final Logger logger = Logger.getLogger(CuteNamesRestAPI.class.getName());
 
    @Override
-   protected void initSuccess() {
+   protected void initSuccess(Future<Void> startFuture) {
       String host = config().getString("http.host", "localhost");
       int port = config().getInteger("http.port", 8080);
       logger.info(String.format("Starting CuteNamesRestAPI in %s:%d", host, port));
@@ -42,7 +43,13 @@ public class CuteNamesRestAPI extends CacheAccessVerticle {
 
       vertx.createHttpServer()
             .requestHandler(router::accept)
-            .listen(port);
+            .listen(port, ar -> {
+               if (ar.succeeded()) {
+                  startFuture.complete();
+               } else {
+                  startFuture.fail(ar.cause());
+               }
+            });
    }
 
    private void handleAddCuteName(RoutingContext rc) {
