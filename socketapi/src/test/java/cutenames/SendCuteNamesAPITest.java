@@ -2,6 +2,7 @@ package cutenames;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.UUID;
 
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
@@ -14,10 +15,9 @@ import org.junit.runner.RunWith;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.WebSocket;
-import io.vertx.core.http.WebSocketFrame;
+import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
@@ -26,8 +26,8 @@ public class SendCuteNamesAPITest {
 
    private Vertx vertx;
    private int port;
-   private HttpClient httpClient;
    private String host;
+   private RemoteCacheManager client;
 
    @Before
    public void setUp(TestContext context) throws IOException {
@@ -41,50 +41,32 @@ public class SendCuteNamesAPITest {
                   .put("http.port", port)
                   .put("infinispan.host", host)
             );
-      httpClient = vertx.createHttpClient();
       vertx.deployVerticle(SendCuteNamesAPI.class.getName(), options, context.asyncAssertSuccess());
+      Configuration configuration = new ConfigurationBuilder().addServer()
+            .host(host)
+            .port(11222)
+            .build();
+      client = new RemoteCacheManager(configuration);
    }
 
    @After
    public void after(TestContext context) {
       vertx.close(context.asyncAssertSuccess());
+      client.getCache().clear();
    }
 
    @Test
-   public void sockets() {
-      Configuration configuration = new ConfigurationBuilder().addServer()
-            .host(host)
-            .port(11222)
-            .build();
+   public void publish_name_working(TestContext context) throws InterruptedException {
+      Async async = context.async();
 
-      RemoteCacheManager client = new RemoteCacheManager(configuration);
-      RemoteCache<Integer, String> defaultCache = client.getCache();
-      defaultCache.put(42, "Oihana");
+      RemoteCache<String, String> defaultCache = client.getCache();
+      defaultCache.put(UUID.randomUUID().toString(), "Elaia");
 
-      httpClient.websocket(port, host, "/eventbus/websocket", ws -> {
-         System.out.println("Connected");
-         sendPing(ws);
-
-         // Send pings periodically to avoid the websocket connection being closed
-         vertx.setPeriodic(5000, id -> {
-            sendPing(ws);
-         });
-
-         // Register
-         JsonObject msg = new JsonObject().put("type", "register").put("address", SendCuteNamesAPI.CUTE_NAMES_ADDRESS);
-         ws.writeFrame(WebSocketFrame.textFrame(msg.encode(), true));
-
-         ws.handler(buff -> {
-            System.out.println(buff);
-            JsonObject json = new JsonObject(buff.toString()).getJsonObject("body");
-            System.out.println(json);
-         });
+      EventBus eb = vertx.eventBus();
+      eb.consumer(SendCuteNamesAPI.CUTE_NAMES_ADDRESS, message -> {
+         context.assertEquals("Elaia", message.body());
+         async.complete();
       });
-   }
-
-   static void sendPing(WebSocket ws) {
-      JsonObject msg = new JsonObject().put("type", "ping");
-      ws.writeFrame(WebSocketFrame.textFrame(msg.encode(), true));
    }
 
 }
