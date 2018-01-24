@@ -1,6 +1,7 @@
 package consumer;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import io.vertx.core.Future;
 import io.vertx.core.VertxOptions;
@@ -11,13 +12,13 @@ import io.vertx.reactivex.core.Vertx;
 public class RebootConsumer extends AbstractVerticle {
 
    public static final String REBOOT_ADDRESS = "reboot";
-
+   private final Logger logger = Logger.getLogger(Monitoring.class.getName());
    private boolean reboot = false;
    private String id = "ID-" + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
 
    @Override
    public void start(Future<Void> startFuture) throws Exception {
-      System.out.println(id + " verticle started");
+      logger.info("Reboot verticle " + id + " started");
       vertx.eventBus().consumer("ids", message -> {
          int id = ((Integer) message.body()).intValue();
 
@@ -33,11 +34,11 @@ public class RebootConsumer extends AbstractVerticle {
       if (!reboot) {
          reboot = true;
          vertx.eventBus().send(REBOOT_ADDRESS, startRebootMessage());
-         System.out.println(">> Start system reboot ... ");
+         logger.info(">> Start system reboot ... ");
 
          vertx.setTimer(3000, h -> {
             vertx.eventBus().send(REBOOT_ADDRESS, endRebootMessage());
-            System.out.println("<< Reboot Over");
+            logger.info("<< Reboot Over");
             reboot = false;
          });
       }

@@ -1,5 +1,7 @@
 package consumer;
 
+import java.util.logging.Logger;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.VertxOptions;
@@ -8,12 +10,14 @@ import io.vertx.reactivex.core.Vertx;
 
 public class Monitoring extends AbstractVerticle {
 
+   private final Logger logger = Logger.getLogger(Monitoring.class.getName());
+
    @Override
    public void start(Future<Void> startFuture) throws Exception {
-      System.out.println("Reboot monitor");
+      logger.info("Reboot monitor started");
       vertx.eventBus().consumer("reboot", message -> {
          JsonObject reboot = (JsonObject) message.body();
-         System.out.println("Status " + reboot.getString("status") + " by " + reboot.getString("by"));
+         logger.info(("Status " + reboot.getString("status") + " by " + reboot.getString("by")));
       });
       startFuture.complete();
    }
