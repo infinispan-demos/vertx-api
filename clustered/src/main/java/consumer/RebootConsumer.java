@@ -12,7 +12,7 @@ import io.vertx.reactivex.core.Vertx;
 public class RebootConsumer extends AbstractVerticle {
 
    public static final String REBOOT_ADDRESS = "reboot";
-   private final Logger logger = Logger.getLogger(Monitoring.class.getName());
+   private final Logger logger = Logger.getLogger(RebootConsumer.class.getName());
    private boolean reboot = false;
    private String id = "ID-" + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
 
