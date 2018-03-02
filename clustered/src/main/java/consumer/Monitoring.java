@@ -1,5 +1,9 @@
 package consumer;
 
+import static commons.Config.BY;
+import static commons.Config.REBOOT_ADDRESS;
+import static commons.Config.STATUS;
+
 import java.util.logging.Logger;
 
 import io.vertx.core.AbstractVerticle;
@@ -15,9 +19,9 @@ public class Monitoring extends AbstractVerticle {
    @Override
    public void start(Future<Void> startFuture) throws Exception {
       logger.info("Reboot monitor started");
-      vertx.eventBus().consumer("reboot", message -> {
+      vertx.eventBus().consumer(REBOOT_ADDRESS, message -> {
          JsonObject reboot = (JsonObject) message.body();
-         logger.info(("Status " + reboot.getString("status") + " by " + reboot.getString("by")));
+         logger.info(("Status " + reboot.getString(STATUS) + " by " + reboot.getString(BY)));
       });
       startFuture.complete();
    }

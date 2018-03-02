@@ -36,7 +36,7 @@ You can now put and get names using curl.
 Each time a new name will be posted, the name will be displayed in the client application.
 
 
-## Deploying the solution on Openshift
+## Deploying on Openshift
 
 - Docker version 1.13.1. Above versions are not guaranteed to be fully working on Openshift
 - OpenShift Client 3.6
@@ -51,3 +51,8 @@ Docker daemon has to be running !
 
 The configuration of the client should be changed to go to the URL of Openshift instead of localhost.
 TODO: Deploy the client app in Openshift
+
+## Clustered Vert.x
+
+Clustered Vert.x example showcases a dummy application in cluster mode using Infinispan cluster manager.
+
