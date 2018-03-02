@@ -1,9 +1,10 @@
 package producer;
 
+import static commons.Config.IDS_ADDRESS;
+
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
-import consumer.Monitoring;
 import io.vertx.core.Future;
 import io.vertx.core.VertxOptions;
 import io.vertx.reactivex.core.AbstractVerticle;
@@ -20,7 +21,7 @@ public class RandomIdsProducer extends AbstractVerticle {
       vertx.setPeriodic(1000, x -> {
          int randomId = ThreadLocalRandom.current().nextInt(0, 3);
          logger.info("Sending data to 'ids' -> " + randomId);
-         vertx.eventBus().send("ids", randomId);
+         vertx.eventBus().send(IDS_ADDRESS, randomId);
       });
       startFuture.complete();
    }
