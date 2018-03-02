@@ -1,8 +1,9 @@
 This is a simple example on how to build your first [Vert.x](http://www.vertx.io) using Infinispan.
 
-Example include :
-- REST API
-- PUSH API
+Examples include :
+- Creating a simple REST API
+- Creating and consuming a simple PUSH API
+- Clustering with Infinispan
 
 ## Running locally 
 
@@ -35,6 +36,10 @@ You can now put and get names using curl.
 
 Each time a new name will be posted, the name will be displayed in the client application.
 
+### Clustered Vert.x
+
+Clustered Vert.x example showcases a dummy application in cluster mode using Infinispan cluster manager.
+See the dedicated readme file.
 
 ## Deploying on Openshift
 
@@ -51,8 +56,3 @@ Docker daemon has to be running !
 
 The configuration of the client should be changed to go to the URL of Openshift instead of localhost.
 TODO: Deploy the client app in Openshift
-
-## Clustered Vert.x
-
-Clustered Vert.x example showcases a dummy application in cluster mode using Infinispan cluster manager.
-
