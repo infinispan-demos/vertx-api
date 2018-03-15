@@ -8,12 +8,12 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
-import io.vertx.reactivex.core.AbstractVerticle;
-import io.vertx.reactivex.core.Vertx;
-import io.vertx.reactivex.core.shareddata.Lock;
+import io.vertx.core.shareddata.Lock;
 
 public class RebootConsumer extends AbstractVerticle {
 
@@ -24,8 +24,8 @@ public class RebootConsumer extends AbstractVerticle {
    @Override
    public void start(Future<Void> startFuture) throws Exception {
       logger.info("Reboot verticle " + id + " started");
-      vertx.eventBus().consumer("ids", message -> {
-         int id = ((Integer) message.body()).intValue();
+      vertx.eventBus().<Integer>consumer("ids", message -> {
+         int id = message.body().intValue();
 
          if (id == 0) {
             launchReboot();
@@ -47,8 +47,8 @@ public class RebootConsumer extends AbstractVerticle {
                vertx.setTimer(3000, h -> {
                   vertx.eventBus().send(REBOOT_ADDRESS, endRebootMessage());
                   logger.info("<< Reboot Over");
-                  lock.release();
                   reboot = false;
+                  lock.release();
                });
 
             } else {
