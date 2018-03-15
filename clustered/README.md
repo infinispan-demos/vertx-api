@@ -2,9 +2,9 @@
 
 ## Dummy application
 
-![Clustered Vert.x example](/img/ClusteredVertxApp.png)
+![Clustered Vert.x example](/img/dummyApp.png)
 
-#### RandomIdsProducer
+#### WebServiceStatusProducer
 
 Produces randomly [0,1,2] values every 1000 milliseconds and sends them to the event bus "ids" address.
 
@@ -19,7 +19,7 @@ Consumes monitoring messages from the event bus "reboot" address and logs them.
 
 ## Running the application in cluster mode
 
-* Run RandomIdProducer main `java producer.RandomIdsProducer`
+* Run WebServiceStatusProducer main `java producer.WebServiceStatusProducer`
 * Run Monitoring main `java cosumer.Monitoring`
 * Run RebootConsumer main `java consumer.RebootConsumer`
 
