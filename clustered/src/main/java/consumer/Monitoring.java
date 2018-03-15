@@ -8,9 +8,9 @@ import java.util.logging.Logger;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
-import io.vertx.reactivex.core.Vertx;
 
 public class Monitoring extends AbstractVerticle {
 
@@ -19,8 +19,8 @@ public class Monitoring extends AbstractVerticle {
    @Override
    public void start(Future<Void> startFuture) throws Exception {
       logger.info("Reboot monitor started");
-      vertx.eventBus().consumer(REBOOT_ADDRESS, message -> {
-         JsonObject reboot = (JsonObject) message.body();
+      vertx.eventBus().<JsonObject>consumer(REBOOT_ADDRESS, message -> {
+         JsonObject reboot = message.body();
          logger.info(("Status " + reboot.getString(STATUS) + " by " + reboot.getString(BY)));
       });
       startFuture.complete();
