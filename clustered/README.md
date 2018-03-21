@@ -2,7 +2,7 @@
 
 ## Dummy application
 
-![Clustered Vert.x example](https://github.com/infinispan-demos/vertx-api/tree/master/clustered/img/dummyApp.png)
+![Clustered Vert.x example](img/dummyApp.png)
 
 #### WebServiceStatusProducer
 
