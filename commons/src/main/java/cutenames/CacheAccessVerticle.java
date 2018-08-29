@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.infinispan.client.hotrod.configuration.ClientIntelligence;
 import org.infinispan.client.hotrod.configuration.Configuration;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 
@@ -22,6 +23,9 @@ public abstract class CacheAccessVerticle extends AbstractVerticle {
          Configuration configuration = new ConfigurationBuilder().addServer()
                .host(config().getString("infinispan.host", "datagrid-hotrod"))
                .port(config().getInteger("infinispan.port", 11222))
+               // We add this to make it possible to access from mac to the docker server.
+               // Read https://blog.infinispan.org/2018/03/accessing-infinispan-inside-docker-for.html
+               .clientIntelligence(ClientIntelligence.BASIC)
                .build();
          client = new RemoteCacheManager(
                configuration);
