@@ -32,7 +32,7 @@ For example, if you want to test with the version 9.3.0.Final:
 
 ### REST API
 
-- `cd resapi`
+- `cd restapi`
 - run `mvn exec:java -Dexec.mainClass="cutenames.CuteNamesRestAPI"`
 
 You can now put and get names using curl.
