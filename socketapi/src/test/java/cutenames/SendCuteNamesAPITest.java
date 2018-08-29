@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.infinispan.client.hotrod.configuration.ClientIntelligence;
 import org.infinispan.client.hotrod.configuration.Configuration;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.junit.After;
@@ -45,6 +46,7 @@ public class SendCuteNamesAPITest {
       Configuration configuration = new ConfigurationBuilder().addServer()
             .host(host)
             .port(11222)
+            .clientIntelligence(ClientIntelligence.BASIC)
             .build();
       client = new RemoteCacheManager(configuration);
    }

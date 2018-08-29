@@ -8,6 +8,9 @@ import java.net.ServerSocket;
 
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.infinispan.client.hotrod.configuration.ClientIntelligence;
+import org.infinispan.client.hotrod.configuration.Configuration;
+import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,8 +49,15 @@ public class CuteNamesRestAPITest {
       webClient = WebClient.create(vertx);
       vertx.deployVerticle(CuteNamesRestAPI.class.getName(), options, context.asyncAssertSuccess());
 
+      Configuration configuration = new ConfigurationBuilder().addServer()
+            .host("localhost")
+            .port(11222)
+            // We add this to make it possible to access from mac to the docker server.
+            // Read https://blog.infinispan.org/2018/03/accessing-infinispan-inside-docker-for.html
+            .clientIntelligence(ClientIntelligence.BASIC)
+            .build();
       // Create a name by default
-      RemoteCacheManager cacheManager = new RemoteCacheManager();
+      RemoteCacheManager cacheManager = new RemoteCacheManager(configuration);
       defaultCache = cacheManager.getCache();
       defaultCache.put("42", "Oihana");
    }
