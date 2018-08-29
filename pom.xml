@@ -4,19 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>demos</groupId>
+  <groupId>org.infinispan</groupId>
   <artifactId>vertx-api</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
   <modules>
-    <module>restapi</module>
     <module>commons</module>
+    <module>restapi</module>
     <module>socketapi</module>
     <module>clustered</module>
   </modules>
 
   <properties>
-    <infinispan.version>9.1.6.Final</infinispan.version>
+    <infinispan.version>9.3.0.Final</infinispan.version>
     <vertx.version>3.5.1</vertx.version>
     <vertx-maven-plugin.version>1.0.13</vertx-maven-plugin.version>
     <fabric8-maven-plugin.version>3.5.32</fabric8-maven-plugin.version>

@@ -10,6 +10,8 @@ Examples include :
 REST and PUSH APi examples use [Client/Server mode](http://infinispan.org/docs/stable/user_guide/user_guide.html#client_server) and 
 the [Hot Rod protocol](http://infinispan.org/docs/stable/user_guide/user_guide.html#hotrod:java-client).
 Both examples need an Infinispan Server running locally.
+You will need an Infinispan Server to run [CuteNamesRestAPITest](restapi/src/main/java/cutenames/CuteNamesRestAPI.java) and
+[SendCuteNamesAPITest](socketapi/src/main/java/cutenames/SendCuteNamesAPI.java)
 
 The clustered example, uses the [Vert.x Infinispan Cluster Manager](https://vertx.io/docs/vertx-infinispan/java/). Each node
 of the clustered application uses an embedded infinispan instance. We don't need any server running. 
@@ -59,7 +61,7 @@ Each time a new name will be posted, the name will be displayed in the client ap
 ### Clustered Vert.x
 
 Clustered Vert.x example showcases a dummy application in cluster mode using Infinispan cluster manager.
-See the dedicated readme file.
+See the dedicated [readme file](clustered/README.md).
 
 # Deploying on Openshift
 
