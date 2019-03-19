@@ -63,18 +63,14 @@ Each time a new name will be posted, the name will be displayed in the client ap
 Clustered Vert.x example showcases a dummy application in cluster mode using Infinispan cluster manager.
 See the dedicated [readme file](clustered/README.md).
 
-# Deploying on Openshift
+# Deploying on OpenShift
 
-- Docker version 1.13.1. Above versions are not guaranteed to be fully working on Openshift
-- OpenShift Client 3.6
-- Kubernetes 1.6
-- Kubetail 1.2.1
+The new way of deploying a Infinispan is now using the [Operator framework](https://github.com/operator-framework).
 
-Docker daemon has to be running !
+Read this [Infinispan Simple Tutorial](https://github.com/infinispan/infinispan-simple-tutorials/tree/master/operator) 
+to have it up and running!
 
-- Start Openshift cluster with the service catalog `./bin/start-openshift.sh`
-- Start Infinispan cluster `./bin/start-infinispan.sh`
-- Deploy the verticles `mvn fabric8:deploy`
+The cluster created by the example above 'example-infinispan' is the host you need to use to connect with
+ the hotrod client. Instead `localhost:11222` your server will be `example-infinispan:11222`
+ This is configured by default in the code in [`CacheAccessVerticle`](./commons/src/main/java/cutenames/CacheAccessVerticle.java)
 
-The configuration of the client should be changed to go to the URL of Openshift instead of localhost.
-TODO: Deploy the client app in Openshift
